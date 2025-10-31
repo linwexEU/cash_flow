@@ -38,6 +38,7 @@ class Category(Base):
     cash_type: Mapped[int] = mapped_column(ForeignKey("cash_type.id"), nullable=False)
 
     cash = relationship("CashType", back_populates="category")
+    subcategory = relationship("SubCategory", back_populates="category")
 
     __table_args__ = (
         Index("ix_category_category_name", category_name),
@@ -51,7 +52,7 @@ class SubCategory(Base):
     subcategory_name: Mapped[str] = mapped_column(unique=True, nullable=False) 
     parent_category: Mapped[int] = mapped_column(ForeignKey("category.id"), nullable=False)
 
-    category = relationship(Category)
+    category = relationship("Category", back_populates="subcategory", cascade="all, delete")
 
     __table_args__ = (
         Index("ix_subcategory_subcategory_name", subcategory_name),

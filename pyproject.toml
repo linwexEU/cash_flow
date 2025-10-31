@@ -9,5 +9,6 @@ dependencies = [
     "alembic>=1.17.1",
     "dotenv>=0.9.9",
     "fastapi[all]>=0.120.2",
+    "pydantic>=2.12.3",
     "sqlalchemy>=2.0.44",
 ]

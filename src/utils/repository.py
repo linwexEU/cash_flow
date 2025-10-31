@@ -11,10 +11,14 @@ M = TypeVar("M", bound=Base)
 
 
 class AbstractRepository(ABC): 
+    @abstractmethod
     def __init__(self, session: AsyncSession) -> None: ...
 
     @abstractmethod
     async def create(self, *args: Any, **kwargs: Any) -> None: ... 
+
+    @abstractmethod
+    async def select(self, *args: Any, **kwargs: Any) -> Sequence[M]: ...
 
     @abstractmethod
     async def select_by_filter_all(self, *args: Any, **kwargs: Any) -> Sequence[M]: ...
@@ -38,6 +42,11 @@ class SqlAlchemyRepository(AbstractRepository):
     async def create(self, **kwargs: Any) -> None: 
         query = insert(self._model).values(**kwargs) 
         await self._session.execute(query)
+
+    async def select(self) -> Sequence[M]:
+        query = select(self._model)
+        res = await self._session.execute(query) 
+        return res.scalars().all()
 
     async def select_by_filter_all(self, **kwargs: Any) -> Sequence[M]: 
         query = select(self._model).filter_by(**kwargs)
