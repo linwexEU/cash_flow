@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status
 
-from src.api.services.category import CategoryServiceDep
+from src.api.dependencies.category import CategoryServiceDep
 from src.schemas.category import CreateCategoryRequests, CreateCategoryResponse, ViewCategoryResponse, UpdateCategoryRequest, \
                                  UpdateCategoryResponse, DeleteCategoryResponse
 
@@ -13,7 +13,7 @@ async def view_category(service: CategoryServiceDep) -> ViewCategoryResponse:
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED) 
-async def create_category(category: CreateCategoryRequests, service: CategoryServiceDep) -> CreateCategoryResponse: 
+async def create_category(category: CreateCategoryRequests, service: CategoryServiceDep) -> CreateCategoryResponse:
     return await service.create_category(category)
 
 

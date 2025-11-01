@@ -1,8 +1,8 @@
 from fastapi import APIRouter, status
 
+from src.api.dependencies.cash_type import CashTypeServiceDep
 from src.schemas.cash_type import CreateTypeRequest, ViewTypeResponse, CreateTypeResponse, UpdateTypeRequest, \
                                   UpdateTypeResponse, DeleteTypeResponse
-from src.api.services.cash_type import CashTypeServiceDep
 
 router = APIRouter()
 

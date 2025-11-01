@@ -1,0 +1,2 @@
+2025-11-01 13:51:55 | INFO  | root:wrapper:12 - Do: delete_subcategory, Args: (<src.api.services.subcategory.SubCategoryService object at 0x000001D253009010>, 66), Kwargs: {}
+2025-11-01 13:56:14 | ERROR | root:wrapper:15 - Args: (<src.api.services.subcategory.SubCategoryService object at 0x000002639A695010>, 66), Kwargs: {}, Error: SubCategory with id=66 not found.

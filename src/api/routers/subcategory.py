@@ -1,9 +1,8 @@
 from fastapi import APIRouter, status
 
-from src.api.services.subcategory import SubCategoryServiceDep
+from src.api.dependencies.subcategory import SubCategoryServiceDep
 from src.schemas.subcategory import CreateSubCategoryRequest, CreateSubCategoryResponse, ViewSubCategoryResponse, \
                                     UpdateSubCategoryRequest, UpdateSubCategoryResponse, DeleteSubCategoryResponse
-from src.api.services.subcategory import SubCategoryServiceDep
 
 router = APIRouter() 
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status
 
-from src.api.services.cash_status import CashStatusServiceDep
+from src.api.dependencies.cash_status import CashStatusServiceDep
 from src.schemas.cash_status import CreateStatusRequest, CreateStatusResponse, UpdateStatusRequest, UpdateStatusResponse, \
                                     DeleteStatusResponse, ViewStatusResponse
 

@@ -1,38 +1,44 @@
-from typing import Annotated
-
-from fastapi import Depends 
-
 from src.schemas.subcategory import CreateSubCategoryRequest, CreateSubCategoryResponse, ViewSubCategoryResponse, \
                                     UpdateSubCategoryRequest, UpdateSubCategoryResponse, DeleteSubCategoryResponse
 from src.utils.service import BaseService
 from src.models.enums import ResponseStatus
-from src.utils.unit_of_work import SqlAlchemyUnitOfWork
+from src.exceptions.repository import RepositoryIntegrityError, NotFoundError
+from src.exceptions.service import CategorDoesNotExist, SubCategoryNotFound, SubCategoryUniqueError
+from src.utils.logger import log
 
 
 class SubCategoryService(BaseService):
+    @log
     async def view_subcategory(self) -> ViewSubCategoryResponse: 
         async with self.uow: 
-            res = await self.uow.subcategory_repo.select() 
-        return ViewSubCategoryResponse.from_orm(res) 
+            res = await self.uow.subcategory_repo.select()
+            return ViewSubCategoryResponse.from_orm(res)
 
+    @log
     async def create_subcategory(self, subcategory: CreateSubCategoryRequest) -> CreateSubCategoryResponse: 
-        async with self.uow: 
-            await self.uow.subcategory_repo.create(**subcategory.model_dump()) 
-        return CreateSubCategoryResponse(Status=ResponseStatus.Success)
+        try:
+            async with self.uow: 
+                await self.uow.subcategory_repo.create(**subcategory.model_dump()) 
+                return CreateSubCategoryResponse(Status=ResponseStatus.Success)
+        except RepositoryIntegrityError as exc: 
+            if "UNIQUE constraint" in str(exc): 
+                raise SubCategoryUniqueError(f"SubCategory with name={subcategory.subcategory_name} already exists.")
+            raise CategorDoesNotExist(f"Category with id={subcategory.parent_category} does not exist.")
 
-    async def update_subcategory(self, subcategory_id: int, subcategory: UpdateSubCategoryRequest) -> UpdateSubCategoryResponse: 
-        async with self.uow: 
-            await self.uow.subcategory_repo.update_by_id(subcategory_id, **subcategory.model_dump(exclude_none=True)) 
-        return UpdateSubCategoryResponse(Status=ResponseStatus.Success) 
+    @log
+    async def update_subcategory(self, subcategory_id: int, subcategory: UpdateSubCategoryRequest) -> UpdateSubCategoryResponse:
+        try: 
+            async with self.uow: 
+                await self.uow.subcategory_repo.update_by_id(subcategory_id, **subcategory.model_dump(exclude_none=True)) 
+                return UpdateSubCategoryResponse(Status=ResponseStatus.Success) 
+        except NotFoundError: 
+            raise SubCategoryNotFound(f"SubCategory with id={subcategory_id} not found.")
 
-    async def delete_subcategory(self, subcategory_id: int) -> DeleteSubCategoryResponse: 
-        async with self.uow: 
-            await self.uow.subcategory_repo.delete_by_id(subcategory_id)
-        return DeleteSubCategoryResponse(Status=ResponseStatus.Success) 
-
-
-async def get_subcategory_service() -> SubCategoryService: 
-    return SubCategoryService(SqlAlchemyUnitOfWork())
-
-
-SubCategoryServiceDep = Annotated[SubCategoryService, Depends(get_subcategory_service)]
+    @log
+    async def delete_subcategory(self, subcategory_id: int) -> DeleteSubCategoryResponse:
+        try: 
+            async with self.uow: 
+                await self.uow.subcategory_repo.delete_by_id(subcategory_id)
+                return DeleteSubCategoryResponse(Status=ResponseStatus.Success) 
+        except NotFoundError: 
+            raise SubCategoryNotFound(f"SubCategory with id={subcategory_id} not found.")

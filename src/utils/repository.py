@@ -1,11 +1,13 @@
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import Any, Generic, TypeVar
+from typing import Any, TypeVar
 
 from sqlalchemy.ext.asyncio import AsyncSession 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy import select, insert, update, delete
 
 from src.db.base import Base
+from src.exceptions.repository import NotFoundError, RepositoryIntegrityError
 
 M = TypeVar("M", bound=Base)
 
@@ -40,8 +42,11 @@ class SqlAlchemyRepository(AbstractRepository):
         self._session = session
 
     async def create(self, **kwargs: Any) -> None: 
-        query = insert(self._model).values(**kwargs) 
-        await self._session.execute(query)
+        try:
+            query = insert(self._model).values(**kwargs) 
+            await self._session.execute(query)
+        except IntegrityError as exc: 
+            raise RepositoryIntegrityError(exc)
 
     async def select(self) -> Sequence[M]:
         query = select(self._model)
@@ -59,9 +64,13 @@ class SqlAlchemyRepository(AbstractRepository):
         return res.scalar_one_or_none()
     
     async def update_by_id(self, obj_id: int, **kwargs: Any) -> None: 
-        query = update(self._model).values(**kwargs).where(self._model.id == obj_id)
-        await self._session.execute(query) 
-
+        query = update(self._model).values(**kwargs).where(self._model.id == obj_id).returning(self._model.id)
+        updated = await self._session.execute(query) 
+        if not updated.scalar(): 
+            raise NotFoundError(f"{self._model.__name__} with id=({obj_id}) not found.")
+        
     async def delete_by_id(self, obj_id: int) -> None: 
-        query = delete(self._model).where(self._model.id == obj_id)
-        await self._session.execute(query)
+        query = delete(self._model).where(self._model.id == obj_id).returning(self._model.id)
+        deleted = await self._session.execute(query)
+        if not deleted.scalar(): 
+            raise NotFoundError(f"{self._model.__name__} with id=({obj_id}) not found.")
