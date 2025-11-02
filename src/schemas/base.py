@@ -4,5 +4,5 @@ from src.models.enums import ResponseStatus
 
 
 class BaseResponse(BaseModel): 
-    Status: ResponseStatus 
-    Message : str | None = None
+    status: ResponseStatus 
+    message : str | None = None

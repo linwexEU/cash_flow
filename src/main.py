@@ -14,7 +14,7 @@ async def lifespan(app: FastAPI):
 
 
 def create_app() -> FastAPI: 
-    app = FastAPI(lifespan=lifespan) 
+    app = FastAPI(lifespan=lifespan, swagger_ui_parameters={"docExpansion": "none"}) 
     
     # Include routers
     app.include_router(router) 

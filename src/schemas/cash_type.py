@@ -41,3 +41,8 @@ class UpdateTypeResponse(BaseResponse):
 
 class DeleteTypeResponse(BaseResponse): 
     pass 
+
+
+class CashTypeFilters(BaseModel): 
+    id: int | None = None
+    type_name: str | None = None

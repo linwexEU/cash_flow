@@ -41,4 +41,12 @@ class SubCategoryNotFound(ServiceError):
 
 
 class CategoryNotFound(ServiceError):
+    pass
+
+
+class IncorrectTypeError(ServiceError): 
+    pass 
+
+
+class CashFlowNotFound(ServiceError): 
     pass 

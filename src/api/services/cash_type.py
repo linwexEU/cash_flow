@@ -19,7 +19,7 @@ class CashTypeService(BaseService):
         try: 
             async with self.uow: 
                 await self.uow.cash_type_repo.create(**cash_type.model_dump()) 
-                return CreateTypeResponse(Status=ResponseStatus.Success)
+                return CreateTypeResponse(status=ResponseStatus.Success)
         except RepositoryIntegrityError: 
             raise CashTypeUniqueError(f"CashType with name={cash_type.type_name} already exists.")
     
@@ -28,7 +28,7 @@ class CashTypeService(BaseService):
         try:
             async with self.uow: 
                 await self.uow.cash_type_repo.update_by_id(cash_type_id, **cash_type.model_dump(exclude_none=True))
-                return UpdateTypeResponse(Status=ResponseStatus.Success)
+                return UpdateTypeResponse(status=ResponseStatus.Success)
         except NotFoundError: 
             raise CashTypeNotFound(f"CashType with id={cash_type_id} not found.")
 
@@ -37,6 +37,6 @@ class CashTypeService(BaseService):
         try:
             async with self.uow: 
                 await self.uow.cash_type_repo.delete_by_id(cash_type_id)
-                return DeleteTypeResponse(Status=ResponseStatus.Success)
+                return DeleteTypeResponse(status=ResponseStatus.Success)
         except NotFoundError: 
             raise CashTypeNotFound(f"CashType with id={cash_type_id} not found.")

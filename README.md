@@ -34,7 +34,7 @@ Users can **create**, **edit**, **delete**, and **view** financial transaction r
   * Category **Infrastructure** → Subcategories: `VPS`, `Proxy`
   * Category **Marketing** → Subcategories: `Farpost`, `Avito`
     *(the list should be extendable)*
-* **Amount** — amount in RUB, e.g. `1,000 ₽`
+* **Amount** — amount in USD, e.g. `1,000 $`
 * **Comment** — optional free-form text
 
 ---

@@ -19,7 +19,7 @@ class CashStatusService(BaseService):
         try:
             async with self.uow:
                 await self.uow.cash_status_repo.create(**status.model_dump()) 
-                return CreateStatusResponse(Status=ResponseStatus.Success)
+                return CreateStatusResponse(status=ResponseStatus.Success)
         except RepositoryIntegrityError: 
             raise CashStatusUniqueError(f"CashStatus with name={status.status_name} already exists.")
 
@@ -28,7 +28,7 @@ class CashStatusService(BaseService):
         try:
             async with self.uow: 
                 await self.uow.cash_status_repo.update_by_id(status_id, **status.model_dump(exclude_none=True))
-                return UpdateStatusResponse(Status=ResponseStatus.Success)
+                return UpdateStatusResponse(status=ResponseStatus.Success)
         except NotFoundError: 
             raise CashStatusNotFound(f"CashStatus with id={status_id} not found.")
 
@@ -37,6 +37,6 @@ class CashStatusService(BaseService):
         try:
             async with self.uow:
                 await self.uow.cash_status_repo.delete_by_id(status_id)
-                return DeleteStatusResponse(Status=ResponseStatus.Success)
+                return DeleteStatusResponse(status=ResponseStatus.Success)
         except NotFoundError: 
             raise CashStatusNotFound(f"CashStatus with id={status_id} not found.")

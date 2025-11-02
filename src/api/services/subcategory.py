@@ -19,7 +19,7 @@ class SubCategoryService(BaseService):
         try:
             async with self.uow: 
                 await self.uow.subcategory_repo.create(**subcategory.model_dump()) 
-                return CreateSubCategoryResponse(Status=ResponseStatus.Success)
+                return CreateSubCategoryResponse(status=ResponseStatus.Success)
         except RepositoryIntegrityError as exc: 
             if "UNIQUE constraint" in str(exc): 
                 raise SubCategoryUniqueError(f"SubCategory with name={subcategory.subcategory_name} already exists.")
@@ -30,7 +30,7 @@ class SubCategoryService(BaseService):
         try: 
             async with self.uow: 
                 await self.uow.subcategory_repo.update_by_id(subcategory_id, **subcategory.model_dump(exclude_none=True)) 
-                return UpdateSubCategoryResponse(Status=ResponseStatus.Success) 
+                return UpdateSubCategoryResponse(status=ResponseStatus.Success) 
         except NotFoundError: 
             raise SubCategoryNotFound(f"SubCategory with id={subcategory_id} not found.")
 
@@ -39,6 +39,6 @@ class SubCategoryService(BaseService):
         try: 
             async with self.uow: 
                 await self.uow.subcategory_repo.delete_by_id(subcategory_id)
-                return DeleteSubCategoryResponse(Status=ResponseStatus.Success) 
+                return DeleteSubCategoryResponse(status=ResponseStatus.Success) 
         except NotFoundError: 
             raise SubCategoryNotFound(f"SubCategory with id={subcategory_id} not found.")

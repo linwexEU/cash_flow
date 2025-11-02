@@ -19,7 +19,7 @@ class CategoryService(BaseService):
         try: 
             async with self.uow: 
                 await self.uow.category_repo.create(**category.model_dump())
-                return CreateCategoryResponse(Status=ResponseStatus.Success) 
+                return CreateCategoryResponse(status=ResponseStatus.Success) 
         except RepositoryIntegrityError as exc: 
             if "UNIQUE constraint" in str(exc):
                 raise CategoryUniqueError(f"Category with name={category.category_name} already exists.")
@@ -30,7 +30,7 @@ class CategoryService(BaseService):
         try:
             async with self.uow: 
                 await self.uow.category_repo.update_by_id(category_id, **category.model_dump(exclude_none=True))
-                return UpdateCategoryResponse(Status=ResponseStatus.Success) 
+                return UpdateCategoryResponse(status=ResponseStatus.Success) 
         except NotFoundError: 
             raise CategoryNotFound(f"Category with id={category_id} not found.")
 
@@ -39,6 +39,6 @@ class CategoryService(BaseService):
         try:
             async with self.uow: 
                 await self.uow.category_repo.delete_by_id(category_id) 
-                return DeleteCategoryResponse(Status=ResponseStatus.Success)
+                return DeleteCategoryResponse(status=ResponseStatus.Success)
         except NotFoundError: 
             raise CategoryNotFound(f"Category with id={category_id} not found.")

@@ -10,13 +10,20 @@ class StatusInfo(BaseModel):
     status_id: int 
     status_name: str 
 
+    @staticmethod
+    def from_orm(status: CashStatus) -> "StatusInfo": 
+        return StatusInfo(
+            status_id=status.id, 
+            status_name=status.status_name
+        )
+
 
 class ViewStatusResponse(BaseModel): 
     data: list[StatusInfo]
 
     @staticmethod
     def from_orm(status: Sequence[CashStatus]) -> "ViewStatusResponse": 
-        return ViewStatusResponse(data=[StatusInfo(status_id=item.id, status_name=item.status_name) for item in status])
+        return ViewStatusResponse(data=[StatusInfo.from_orm(item) for item in status])
 
 
 class CreateStatusRequest(BaseModel): 

@@ -14,24 +14,38 @@ class CategoryInfo(BaseModel):
     cash_type: TypeInfo
     subcategories: list[SubCategoryInfo]
 
+    @staticmethod
+    def from_orm(category: Category) -> "CategoryInfo":
+        subcategories = [SubCategoryInfo.from_orm(item) for item in category.subcategory]
+        return CategoryInfo(
+            caterogy_id=category.id, 
+            category_name=category.category_name, 
+            cash_type=TypeInfo.from_orm(category.type_),
+            subcategories=subcategories
+        )
+
+
+class ShortCategoryInfo(BaseModel): 
+    caterogy_id: int 
+    category_name: str
+    subcategories: list[SubCategoryInfo]
+
+    @staticmethod
+    def from_orm(category: Category) -> "ShortCategoryInfo":
+        subcategories = [SubCategoryInfo.from_orm(item) for item in category.subcategory]
+        return ShortCategoryInfo(
+            caterogy_id=category.id, 
+            category_name=category.category_name,
+            subcategories=subcategories
+        )
+
 
 class ViewCategoryResponse(BaseModel): 
     data: list[CategoryInfo] 
 
     @staticmethod
     def from_orm(categories: Sequence[Category]) -> "ViewCategoryResponse":
-        data = [] 
-
-        for category in categories:
-            subcategories = [SubCategoryInfo.from_orm(item) for item in category.subcategory]
-            data.append(CategoryInfo(
-                caterogy_id=category.id, 
-                category_name=category.category_name, 
-                cash_type=TypeInfo.from_orm(category.cash),
-                subcategories=subcategories
-            ))
-        
-        return ViewCategoryResponse(data=data)
+        return ViewCategoryResponse(data=[CategoryInfo.from_orm(category) for category in categories])
 
 
 class CreateCategoryRequests(BaseModel):
@@ -54,3 +68,9 @@ class UpdateCategoryResponse(BaseResponse):
 
 class DeleteCategoryResponse(BaseResponse): 
     pass 
+
+
+class CategoryFilters(BaseModel):
+    id: int | None = None 
+    category_name: str | None = None
+    cash_type: int | None = None

@@ -23,7 +23,7 @@ class CashType(Base):
     id: Mapped[int] = mapped_column(primary_key=True) 
     type_name: Mapped[str] = mapped_column(unique=True, nullable=False)
 
-    category = relationship("Category", back_populates="cash")
+    category = relationship("Category", back_populates="type_")
 
     __table_args__ = (
         Index("ix_cash_type_type_name", type_name),
@@ -37,7 +37,7 @@ class Category(Base):
     category_name: Mapped[str] = mapped_column(unique=True, nullable=False)
     cash_type: Mapped[int] = mapped_column(ForeignKey("cash_type.id"), nullable=False)
 
-    cash = relationship("CashType", back_populates="category")
+    type_ = relationship("CashType", back_populates="category")
     subcategory = relationship("SubCategory", back_populates="category")
 
     __table_args__ = (
@@ -68,13 +68,15 @@ class CashFlow(Base):
     cash_type: Mapped[int] = mapped_column(ForeignKey("cash_type.id"), nullable=False) 
     amount: Mapped[float] = mapped_column(nullable=False)
     category: Mapped[int] = mapped_column(ForeignKey("category.id"), nullable=False)
-    subcategory: Mapped[int] = mapped_column(ForeignKey("subcategory.id"), nullable=False)
     comment: Mapped[str] = mapped_column(nullable=True)
+
+    cash_status_rel = relationship("CashStatus")
+    cash_type_rel = relationship("CashType") 
+    category_rel = relationship("Category")
 
     __table_args__ = (
         Index("ix_cash_flow_create_utc", create_utc),
         Index("ix_cash_flow_cash_status", cash_status),
         Index("ix_cash_flow_cash_type", cash_type),
-        Index("ix_cash_flow_category", category),
-        Index("ix_cash_flow_subcategory", subcategory),
+        Index("ix_cash_flow_category", category)
     )
