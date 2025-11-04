@@ -50,3 +50,7 @@ class IncorrectTypeError(ServiceError):
 
 class CashFlowNotFound(ServiceError): 
     pass 
+
+
+class CashFlowNotFound(ServiceError): 
+    pass 

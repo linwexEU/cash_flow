@@ -53,3 +53,23 @@ class ViewCashFlowResponse(BaseModel):
 
 class DeleteCashFlowResponse(BaseResponse): 
     pass 
+
+
+class UpdateCashFlowRequest(BaseModel): 
+    cash_status: int | None = None
+    cash_type: int | None = None
+    category: int | None = None
+    amount: float | None = None
+    comment: str | None = None
+
+
+class UpdateCashFlowResponse(BaseResponse): 
+    pass 
+
+
+class CashFlowFilters(BaseModel): 
+    id: int | None = None
+    cash_status: int | None = None
+    cash_type: int | None = None
+    category: float | None = None
+    amount: int | None = None

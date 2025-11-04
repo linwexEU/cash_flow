@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
-from src.schemas.cash_flow import CreateCashFlowRequest, CreateCashFlowResponse, ViewCashFlowResponse, DeleteCashFlowResponse
+from src.schemas.cash_flow import CreateCashFlowRequest, CreateCashFlowResponse, ViewCashFlowResponse, DeleteCashFlowResponse, \
+                                  UpdateCashFlowRequest, UpdateCashFlowResponse
 from src.api.dependencies.cash_flow import CashFlowServiceDep
 
 router = APIRouter()
@@ -14,6 +15,11 @@ async def view_cash_flow(service: CashFlowServiceDep) -> ViewCashFlowResponse:
 @router.post("/")
 async def create_cash_flow(cash_flow: CreateCashFlowRequest, service: CashFlowServiceDep) -> CreateCashFlowResponse: 
     return await service.create_cash_flow(cash_flow)
+
+
+@router.patch("/{cash_flow_id}")
+async def udpate_cash_flow(cash_flow_id: int, cash_flow: UpdateCashFlowRequest, service: CashFlowServiceDep) -> UpdateCashFlowResponse: 
+    return await service.update_cash_flow(cash_flow_id, cash_flow)
 
 
 @router.delete("/{cash_flow_id}")
