@@ -13,7 +13,7 @@ class CategoryRepository(SqlAlchemyRepository):
     async def select_category_with_subcategories(self) -> Sequence[Category]: 
         query = select(self._model).options(
             selectinload(self._model.subcategory), 
-            selectinload(self._model.cash)
+            selectinload(self._model.type_)
         )
         res = await self._session.execute(query) 
         return res.scalars().all() 

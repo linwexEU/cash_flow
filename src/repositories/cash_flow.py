@@ -3,7 +3,7 @@ from collections.abc import Sequence
 from sqlalchemy.orm import selectinload
 from sqlalchemy import select
 
-from src.models.models import CashFlow, Category
+from src.models.models import CashFlow, Category, SubCategory, CashStatus, CashType
 from src.utils.repository import SqlAlchemyRepository 
 
 
@@ -33,16 +33,18 @@ class CashFlowRepository(SqlAlchemyRepository):
             query = query.where(self._model.create_utc <= end_utc)
 
         if cash_status := specifications.get("cash_status"): 
-            query = query.where(self._model.cash_status == cash_status)
+            query = query.where(CashStatus.id == cash_status)
 
         if cash_type := specifications.get("cash_type"): 
-            query = query.where(self._model.cash_type == cash_type)
+            query = query.where(CashType.id == cash_type)
 
         if category := specifications.get("category"): 
-            query = query.where(self._model.category == category)
+            query = query.where(Category.id == category)
 
-        if subcategory := specifications.get("subcategory"): 
-            query = query.where(self._model.category.subcategory == subcategory)
+        if specifications.get("subcategory"): 
+            query = query.where(
+                CashFlow.category_rel.has(Category.subcategory.any(SubCategory.id == 3))
+            )
 
         res = await self._session.execute(query) 
         return res.scalars().all()

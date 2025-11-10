@@ -73,6 +73,7 @@ class CashFlow(Base):
     cash_status_rel = relationship("CashStatus")
     cash_type_rel = relationship("CashType") 
     category_rel = relationship("Category")
+    subcategories_rel = relationship("SubCategory", secondary="category")
 
     __table_args__ = (
         Index("ix_cash_flow_create_utc", create_utc),
