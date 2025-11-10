@@ -1,7 +1,9 @@
+from datetime import datetime
+
 from src.api.services.commands.cash_flow import ValidateCategoryCommand
 from src.api.services.commands.cash_type import ValidateCashTypeCommand
 from src.utils.service import BaseService 
-from src.schemas.cash_flow import CreateCashFlowRequest, CreateCashFlowResponse, ViewCashFlowResponse, DeleteCashFlowResponse, \
+from src.schemas.cash_flow import CashFlowSpecifications, CreateCashFlowRequest, CreateCashFlowResponse, ViewCashFlowResponse, DeleteCashFlowResponse, \
                                   UpdateCashFlowRequest, UpdateCashFlowResponse, CashFlowFilters
 from src.models.enums import ResponseStatus
 from src.exceptions.service import CashFlowNotFound, CategoryNotFound, IncorrectTypeError, CashTypeNotFound
@@ -14,6 +16,19 @@ class CashFlowService(BaseService):
     async def view_cash_flow(self) -> ViewCashFlowResponse: 
         async with self.uow: 
             res = await self.uow.cash_flow_repo.load_cash_flow()
+            return ViewCashFlowResponse.from_orm(res)
+    
+    @log
+    async def view_cash_flow_with_spec(self, specifications: CashFlowSpecifications) -> ViewCashFlowResponse: 
+        async with self.uow: 
+            # Converting Time
+            if specifications.start_utc: 
+                specifications.start_utc = datetime.strptime(specifications.start_utc, "%d.%m.%Y")
+
+            if specifications.end_utc: 
+                specifications.end_utc = datetime.strptime(specifications.end_utc, "%d.%m.%Y")
+
+            res = await self.uow.cash_flow_repo.select_with_specifications(specifications.model_dump(exclude_none=True)) 
             return ViewCashFlowResponse.from_orm(res)
 
     @log

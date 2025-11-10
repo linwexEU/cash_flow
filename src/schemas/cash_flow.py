@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from datetime import datetime
 
 from pydantic import BaseModel
 
@@ -73,3 +74,12 @@ class CashFlowFilters(BaseModel):
     cash_type: int | None = None
     category: float | None = None
     amount: int | None = None
+
+
+class CashFlowSpecifications(BaseModel): 
+    start_utc: str | datetime | None = None
+    end_utc: str | datetime | None = None
+    cash_status: int | None = None
+    cash_type: int | None = None
+    category: int | None = None
+    subcategory: int | None = None
