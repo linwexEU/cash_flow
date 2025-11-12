@@ -1,11 +1,20 @@
 from sqlalchemy.orm import sessionmaker, DeclarativeBase 
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy import event
+from sqlalchemy import event, NullPool
 
 from src.config import settings
 
-engine = create_async_engine(settings.DB_URL)
+
+if settings.MODE == "TEST": 
+    DATABASE_URL = settings.TEST_DB_URL 
+    DATABASE_PARAMS = {"poolclass": NullPool}
+else: 
+    DATABASE_URL = settings.DB_URL 
+    DATABASE_PARAMS = {}
+
+
+engine = create_async_engine(DATABASE_URL, **DATABASE_PARAMS)
 async_session_factory = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False, autoflush=False) 
 
 
