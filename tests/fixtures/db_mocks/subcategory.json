@@ -1,0 +1,18 @@
+[
+    {
+        "subcategory_name": "VPS", 
+        "parent_category": 1
+    }, 
+    {
+        "subcategory_name": "Proxy", 
+        "parent_category": 1
+    }, 
+    {
+        "subcategory_name": "Farpost", 
+        "parent_category": 2
+    }, 
+    {
+        "subcategory_name": "Avito", 
+        "parent_category": 2
+    }
+]
