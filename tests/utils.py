@@ -1,15 +1,21 @@
-from typing import Any, Sequence
+from typing import Any, Sequence, Literal
+from contextlib import AbstractContextManager, nullcontext
 
 from fastapi import status
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from requests import Response
 
 
-class TestDescription(BaseModel):
+class BaseConfig(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+
+class TestDescription(BaseConfig):
     description: str = "" 
 
 
-class TestExpectation(BaseModel): 
+class TestExpectation(BaseConfig): 
+    expected_error: AbstractContextManager = nullcontext()
     expected_status: int = status.HTTP_200_OK 
     expected_data: Any = None
 
@@ -19,6 +25,7 @@ class BaseTestCase(TestDescription, TestExpectation):
 
 
 class RequestTestCase(BaseTestCase): 
+    method: Literal["GET", "POST", "PATCH", "PUT", "DELETE"] = "GET"
     url: str
     headers: dict | None = None
 

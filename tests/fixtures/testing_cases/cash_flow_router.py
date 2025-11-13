@@ -13,6 +13,7 @@ TEST_CASH_FLOW_ROUTER_GET = [
 
 TEST_CASH_FLOW_ROUTER_CREATE = [
     RequestTestCase(
+        method="POST",
         url="/cash-flow/", 
         headers={}, 
         data={

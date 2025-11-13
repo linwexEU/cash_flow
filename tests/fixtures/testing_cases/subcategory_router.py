@@ -30,6 +30,7 @@ TEST_SUBCATEGORY_ROUTER_GET = [
 
 TEST_SUBCATEGORY_ROUTER_CREATE = [
     RequestTestCase(
+        method="POST",
         url="/subcategory/", 
         headers={}, 
         data={

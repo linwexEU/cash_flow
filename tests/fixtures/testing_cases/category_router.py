@@ -50,6 +50,7 @@ TEST_CATEGORY_ROUTER_GET = [
 
 TEST_CATEGORY_ROUTER_CREATE = [
     RequestTestCase(
+        method="POST",
         url="/category/", 
         headers={}, 
         data={

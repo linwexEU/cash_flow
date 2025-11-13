@@ -27,6 +27,7 @@ TEST_CASH_STATUS_ROUTER_GET_ALL = [
 
 TEST_CASH_STATUS_ROUTER_CREATE = [
     RequestTestCase(
+        method="POST",
         url="/status/", 
         headers={},
         data={
