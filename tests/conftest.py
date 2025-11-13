@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Generator, Any
 
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
 import pytest
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -72,7 +72,7 @@ def fake_uow(session: AsyncSession) -> Generator[FakeUnitOfWork]:
 @pytest_asyncio.fixture
 async def async_client(fake_uow: FakeUnitOfWork) -> AsyncGenerator:
     app.dependency_overrides[SqlAlchemyUnitOfWork] = lambda: fake_uow 
-    async with AsyncClient(app=app, base_url="http://test") as ac: 
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac: 
         yield ac
     app.dependency_overrides.clear()
 

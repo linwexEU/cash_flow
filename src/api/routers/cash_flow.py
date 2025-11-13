@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 
 from src.schemas.cash_flow import CashFlowSpecifications, CreateCashFlowRequest, CreateCashFlowResponse, ViewCashFlowResponse, DeleteCashFlowResponse, \
                                   UpdateCashFlowRequest, UpdateCashFlowResponse
@@ -12,7 +12,7 @@ async def view_cash_flow(service: CashFlowServiceDep) -> ViewCashFlowResponse:
     return await service.view_cash_flow()
 
 
-@router.post("/specifications")
+@router.post("/specifications", status_code=status.HTTP_201_CREATED)
 async def view_cash_flow_specifications(specifications: CashFlowSpecifications, service: CashFlowServiceDep) -> ViewCashFlowResponse: 
     return await service.view_cash_flow_with_spec(specifications) 
 

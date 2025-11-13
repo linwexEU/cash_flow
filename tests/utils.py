@@ -1,7 +1,8 @@
-from typing import Any
+from typing import Any, Sequence
 
 from fastapi import status
 from pydantic import BaseModel
+from requests import Response
 
 
 class TestDescription(BaseModel):
@@ -20,3 +21,18 @@ class BaseTestCase(TestDescription, TestExpectation):
 class RequestTestCase(BaseTestCase): 
     url: str
     headers: dict | None = None
+
+
+def prepare_payload(response: Response, exclude: Sequence[str] | None = None) -> dict: 
+    """Extracts the payload from the response."""
+    payload = response.json()
+    if payload is None: 
+        return {} 
+    
+    if exclude is None:
+        return payload
+    
+    for key in payload: 
+        payload.pop(key) 
+
+    return payload

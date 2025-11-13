@@ -1,11 +1,10 @@
 from fastapi import status
 
-from tests.constants import BASE_ENDPOINT_URL 
 from tests.utils import RequestTestCase
 
 TEST_CATEGORY_ROUTER_GET = [
     RequestTestCase(
-        url=f"{BASE_ENDPOINT_URL}/category", 
+        url="/category/", 
         haeders={}, 
         data={}, 
         expected_data=[
@@ -49,3 +48,18 @@ TEST_CATEGORY_ROUTER_GET = [
     )
 ]
 
+TEST_CATEGORY_ROUTER_CREATE = [
+    RequestTestCase(
+        url="/category/", 
+        headers={}, 
+        data={
+            "cash_type": 1,
+            "category_name": "Крипта"
+        },
+        expected_status=status.HTTP_201_CREATED, 
+        expected_data={
+            "status": "Success", 
+            "message": None
+        }
+    )
+]

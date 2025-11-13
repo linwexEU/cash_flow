@@ -1,11 +1,10 @@
 from fastapi import status
 
-from tests.constants import BASE_ENDPOINT_URL
 from tests.utils import RequestTestCase
 
 TEST_CASH_STATUS_ROUTER_GET_ALL = [
     RequestTestCase(
-        url=f"{BASE_ENDPOINT_URL}/status",
+        url="/status/",
         headers={}, 
         data={}, 
         expected_data=[
@@ -28,7 +27,7 @@ TEST_CASH_STATUS_ROUTER_GET_ALL = [
 
 TEST_CASH_STATUS_ROUTER_CREATE = [
     RequestTestCase(
-        url=f"{BASE_ENDPOINT_URL}/status", 
+        url="/status/", 
         headers={},
         data={
             "status_name": "Хобби"
