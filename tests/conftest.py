@@ -1,15 +1,21 @@
 import asyncio
+from collections.abc import AsyncGenerator
 import json
-import os
 from pathlib import Path
 from typing import Generator, Any
 
+from httpx import AsyncClient
 import pytest
+import pytest_asyncio
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import insert
 
+from src.main import app
 from src.db.base import engine, Base, async_session_factory
 from src.models.models import CashType, CashStatus, Category, SubCategory
 from src.config import settings
+from src.utils.unit_of_work import SqlAlchemyUnitOfWork
+from tests.fixtures.utils import FakeUnitOfWork
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -49,7 +55,27 @@ async def prepare_database() -> None:
             await session.execute(query)
 
         await session.commit()
-    
+
+
+@pytest_asyncio.fixture(scope="session")
+async def session() -> AsyncGenerator[AsyncSession]: 
+    async with async_session_factory() as session: 
+        yield session
+
+
+@pytest_asyncio.fixture 
+def fake_uow(session: AsyncSession) -> Generator[FakeUnitOfWork]: 
+    _fake_uow = FakeUnitOfWork(session) 
+    yield _fake_uow
+
+
+@pytest_asyncio.fixture
+async def async_client(fake_uow: FakeUnitOfWork) -> AsyncGenerator:
+    app.dependency_overrides[SqlAlchemyUnitOfWork] = lambda: fake_uow 
+    async with AsyncClient(app=app, base_url="http://test") as ac: 
+        yield ac
+    app.dependency_overrides.clear()
+
 
 @pytest.fixture(scope="session")
 def event_loop(request: pytest.FixtureRequest) -> Generator[asyncio.AbstractEventLoop]: 
