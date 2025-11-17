@@ -4,7 +4,7 @@ from src.api.services.commands.base import Command
 from src.repositories.category import CategoryRepository
 
 
-class CheckCompatability(Command): 
+class CheckCompatabilityCommand(Command): 
     def __init__(self, category_repo: CategoryRepository, category_id: int, cash_type_id: int) -> None: 
         self.category_repo = category_repo 
         self.category_id = category_id

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from src.api.services.commands.cash_flow import CheckCompatability
+from src.api.services.commands.cash_flow import CheckCompatabilityCommand
 from src.api.services.commands.category import ValidateCategoryCommand
 from src.api.services.commands.cash_type import ValidateCashTypeCommand
 from src.utils.service import BaseService 
@@ -41,7 +41,7 @@ class CashFlowService(BaseService):
             async with self.uow: 
                 category_cmd = ValidateCategoryCommand(self.uow.category_repo, cash_flow.category)
                 cash_type_cmd = ValidateCashTypeCommand(self.uow.cash_type_repo, cash_flow.cash_type)
-                cash_flow_cmd = CheckCompatability(self.uow.category_repo, cash_flow.category, cash_flow.cash_type)
+                cash_flow_cmd = CheckCompatabilityCommand(self.uow.category_repo, cash_flow.category, cash_flow.cash_type)
 
                 await cash_type_cmd.execute() 
                 await category_cmd.execute()
@@ -70,7 +70,7 @@ class CashFlowService(BaseService):
 
                 category_cmd = ValidateCategoryCommand(self.uow.category_repo, category_id)
                 cash_type_cmd = ValidateCashTypeCommand(self.uow.cash_type_repo, cash_type_id)
-                cash_flow_cmd = CheckCompatability(self.uow.category_repo, cash_flow.category, cash_flow.cash_type)
+                cash_flow_cmd = CheckCompatabilityCommand(self.uow.category_repo, cash_flow.category, cash_flow.cash_type)
 
                 # Validate CashType and Category
                 await cash_type_cmd.execute() 
