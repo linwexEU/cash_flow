@@ -29,6 +29,8 @@ class CashStatusService(BaseService):
             async with self.uow: 
                 await self.uow.cash_status_repo.update_by_id(status_id, **status.model_dump(exclude_none=True))
                 return UpdateStatusResponse(status=ResponseStatus.Success)
+        except RepositoryIntegrityError: 
+            raise CashStatusUniqueError(f"CashStatus with name={status.status_name} already exists.")
         except NotFoundError: 
             raise CashStatusNotFound(f"CashStatus with id={status_id} not found.")
 

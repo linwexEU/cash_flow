@@ -65,5 +65,56 @@ TEST_CASH_TYPE_ROUTER_UPDATE = [
             "status": "Success", 
             "message": None
         }
+    ), 
+    RequestTestCase(
+        method="PATCH", 
+        url="/type/22",
+        headers={},
+        data={
+            "type_name": "Пополнение+"
+        }, 
+        expected_status=status.HTTP_400_BAD_REQUEST, 
+        expected_data={
+            "status": "Error", 
+            "message": "CashType with id=22 not found."
+        }
+    ), 
+    RequestTestCase(
+        method="PATCH", 
+        url="/type/1",
+        headers={},
+        data={
+            "type_name": "Списание"
+        }, 
+        expected_status=status.HTTP_400_BAD_REQUEST, 
+        expected_data={
+            "status": "Error", 
+            "message": "CashType with name=Списание already exists."
+        }
+    ), 
+]
+
+TEST_CASH_TYPE_ROUTER_DELETE = [
+    RequestTestCase(
+        method="DELETE", 
+        url="/type/1",
+        headers={},
+        data={}, 
+        expected_status=status.HTTP_200_OK, 
+        expected_data={
+            "status": "Success", 
+            "message": None
+        }
+    ), 
+    RequestTestCase(
+        method="DELETE", 
+        url="/type/1",
+        headers={},
+        data={}, 
+        expected_status=status.HTTP_400_BAD_REQUEST, 
+        expected_data={
+            "status": "Error", 
+            "message": "CashType with id=1 not found."
+        }
     )
 ]

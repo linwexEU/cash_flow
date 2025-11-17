@@ -64,8 +64,12 @@ class SqlAlchemyRepository(AbstractRepository):
         return res.scalar_one_or_none()
     
     async def update_by_id(self, obj_id: int, **kwargs: Any) -> None: 
-        query = update(self._model).values(**kwargs).where(self._model.id == obj_id).returning(self._model.id)
-        updated = await self._session.execute(query) 
+        try:
+            query = update(self._model).values(**kwargs).where(self._model.id == obj_id).returning(self._model.id)
+            updated = await self._session.execute(query) 
+        except IntegrityError: 
+            raise RepositoryIntegrityError 
+        
         if not updated.scalar(): 
             raise NotFoundError(f"{self._model.__name__} with id=({obj_id}) not found.")
         

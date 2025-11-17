@@ -18,7 +18,7 @@ from src.utils.unit_of_work import SqlAlchemyUnitOfWork
 from tests.fixtures.utils import FakeUnitOfWork
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture(autouse=True, scope="class")
 async def prepare_database() -> None: 
     """Fill test database with default data"""
     assert settings.MODE == "TEST"

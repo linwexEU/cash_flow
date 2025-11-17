@@ -12,12 +12,12 @@ async def view_cash_flow(service: CashFlowServiceDep) -> ViewCashFlowResponse:
     return await service.view_cash_flow()
 
 
-@router.post("/specifications", status_code=status.HTTP_201_CREATED)
+@router.post("/specifications")
 async def view_cash_flow_specifications(specifications: CashFlowSpecifications, service: CashFlowServiceDep) -> ViewCashFlowResponse: 
     return await service.view_cash_flow_with_spec(specifications) 
 
 
-@router.post("/")
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_cash_flow(cash_flow: CreateCashFlowRequest, service: CashFlowServiceDep) -> CreateCashFlowResponse: 
     return await service.create_cash_flow(cash_flow)
 

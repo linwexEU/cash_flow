@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 4507069abd13
+Revision ID: b778c67c15d3
 Revises: 
-Create Date: 2025-11-02 17:50:30.344800
+Create Date: 2025-11-15 14:17:56.186608
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '4507069abd13'
+revision: str = 'b778c67c15d3'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -65,7 +65,7 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('subcategory_name', sa.String(), nullable=False),
     sa.Column('parent_category', sa.Integer(), nullable=False),
-    sa.ForeignKeyConstraint(['parent_category'], ['category.id'], ),
+    sa.ForeignKeyConstraint(['parent_category'], ['category.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('subcategory_name')
     )

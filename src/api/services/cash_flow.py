@@ -1,12 +1,13 @@
 from datetime import datetime
 
-from src.api.services.commands.cash_flow import ValidateCategoryCommand
+from src.api.services.commands.cash_flow import CheckCompatability
+from src.api.services.commands.category import ValidateCategoryCommand
 from src.api.services.commands.cash_type import ValidateCashTypeCommand
 from src.utils.service import BaseService 
 from src.schemas.cash_flow import CashFlowSpecifications, CreateCashFlowRequest, CreateCashFlowResponse, ViewCashFlowResponse, DeleteCashFlowResponse, \
                                   UpdateCashFlowRequest, UpdateCashFlowResponse, CashFlowFilters
 from src.models.enums import ResponseStatus
-from src.exceptions.service import CashFlowNotFound, CategoryNotFound, IncorrectTypeError, CashTypeNotFound
+from src.exceptions.service import CashFlowNotFound, CategoryNotFound, CashTypeNotFound, IncorrectTypeError, IncorrectDatetimeFormat
 from src.exceptions.repository import NotFoundError
 from src.utils.logger import log
 
@@ -22,11 +23,14 @@ class CashFlowService(BaseService):
     async def view_cash_flow_with_spec(self, specifications: CashFlowSpecifications) -> ViewCashFlowResponse: 
         async with self.uow: 
             # Converting Time
-            if specifications.start_utc: 
-                specifications.start_utc = datetime.strptime(specifications.start_utc, "%d.%m.%Y")
+            try:
+                if specifications.start_utc: 
+                    specifications.start_utc = datetime.strptime(specifications.start_utc, "%d.%m.%Y")
 
-            if specifications.end_utc: 
-                specifications.end_utc = datetime.strptime(specifications.end_utc, "%d.%m.%Y")
+                if specifications.end_utc: 
+                    specifications.end_utc = datetime.strptime(specifications.end_utc, "%d.%m.%Y")
+            except ValueError: 
+                raise IncorrectDatetimeFormat("Incorrect datetime format. Example: 01.04.2025")
 
             res = await self.uow.cash_flow_repo.select_with_specifications(specifications.model_dump(exclude_none=True)) 
             return ViewCashFlowResponse.from_orm(res)
@@ -35,11 +39,13 @@ class CashFlowService(BaseService):
     async def create_cash_flow(self, cash_flow: CreateCashFlowRequest) -> CreateCashFlowResponse:
         try:
             async with self.uow: 
-                category_cmd = ValidateCategoryCommand(self.uow.category_repo, cash_flow.category, cash_flow.cash_type)
+                category_cmd = ValidateCategoryCommand(self.uow.category_repo, cash_flow.category)
                 cash_type_cmd = ValidateCashTypeCommand(self.uow.cash_type_repo, cash_flow.cash_type)
+                cash_flow_cmd = CheckCompatability(self.uow.category_repo, cash_flow.category, cash_flow.cash_type)
 
                 await cash_type_cmd.execute() 
                 await category_cmd.execute()
+                await cash_flow_cmd.execute()
 
                 await self.uow.cash_flow_repo.create(**cash_flow.model_dump())
 
@@ -62,12 +68,14 @@ class CashFlowService(BaseService):
                 cash_type_id = cash_flow.cash_type if cash_flow.cash_type is not None else cash_flow_db.cash_type
                 category_id = cash_flow.category if cash_flow.category is not None else cash_flow_db.category
 
-                category_cmd = ValidateCategoryCommand(self.uow.category_repo, category_id, cash_type_id)
+                category_cmd = ValidateCategoryCommand(self.uow.category_repo, category_id)
                 cash_type_cmd = ValidateCashTypeCommand(self.uow.cash_type_repo, cash_type_id)
+                cash_flow_cmd = CheckCompatability(self.uow.category_repo, cash_flow.category, cash_flow.cash_type)
 
-                # Validate CashType with Category
+                # Validate CashType and Category
                 await cash_type_cmd.execute() 
                 await category_cmd.execute()
+                await cash_flow_cmd.execute()
 
                 await self.uow.cash_flow_repo.update_by_id(cash_flow_id, **cash_flow.model_dump(exclude_none=True)) 
 
@@ -78,7 +86,7 @@ class CashFlowService(BaseService):
             raise
         except IncorrectTypeError: 
             raise
-        except AttributeError: 
+        except NotFoundError: 
             raise CashFlowNotFound(f"CashFlow with id={cash_flow_id} not found.")
         
     @log

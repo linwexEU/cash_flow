@@ -54,3 +54,7 @@ class CashFlowNotFound(ServiceError):
 
 class CashFlowNotFound(ServiceError): 
     pass 
+
+
+class IncorrectDatetimeFormat(ServiceError): 
+    pass 
